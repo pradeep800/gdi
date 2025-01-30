@@ -1,0 +1,64 @@
+<script type="text/javascript">
+    RED.nodes.registerType('geopandas-SpatialIndex-query', {
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: '' },
+            geometry: { value: '' },
+            predicate: { value: '' },
+            sort: { value: '' },
+            distance: { value: '' },
+            output_format: { value: '' }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-pencil",
+        label: function() {
+            return this.name || "geopandas.SpatialIndex.query";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="geopandas-SpatialIndex-query">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Enter name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-geometry"><i class="fa fa-tag"></i> geometry</label>
+        <input type="text" id="node-input-geometry" placeholder="Enter geometry">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-predicate"><i class="fa fa-tag"></i> predicate</label>
+        <input type="text" id="node-input-predicate" placeholder="Enter predicate">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-sort"><i class="fa fa-tag"></i> sort</label>
+        <input type="text" id="node-input-sort" placeholder="Enter sort">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-distance"><i class="fa fa-tag"></i> distance</label>
+        <input type="text" id="node-input-distance" placeholder="Enter distance">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-output_format"><i class="fa fa-tag"></i> output_format</label>
+        <input type="text" id="node-input-output_format" placeholder="Enter output_format">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="geopandas-SpatialIndex-query">
+    <p>A Node-RED node for geopandas.SpatialIndex.query with parameters:</p>
+    <ul>
+        <li><b>geometry</b>: array-like value</li>
+        <li><b>predicate</b>: parameter value</li>
+        <li><b>sort</b>: boolean flag</li>
+        <li><b>distance</b>: number/array value</li>
+        <li><b>output_format</b>: parameter value</li>
+    </ul>
+    <p>Configure all parameters as strings and connect to trigger the operation.</p>
+</script>
