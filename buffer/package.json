@@ -1,5 +1,5 @@
 {
-  "name": "gdi-dataset",
+  "name": "gdi-buffer",
   "version": "1.0.0",
   "description": "A simple example Node-RED node for GDI",
   "main": "dataset.js",
@@ -7,11 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "dataset"
+    "buffer"
   ],
   "node-red": {
     "nodes": {
-      "dataset": "dataset.js"
+      "dataset": "buffer.js"
     }
   },
   "author": "Pradeep",

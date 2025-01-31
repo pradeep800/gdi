@@ -1,23 +1,28 @@
 <script type="text/javascript">
-    RED.nodes.registerType('dataset', {
+    RED.nodes.registerType('intersection', {
         category: 'gdi',
         color: '#a6bbcf',
         defaults: {
             name: { value: '' },
+            align: { value: 'None' },
         },
         inputs: 1,
         outputs: 1,
         icon: "font-awesome/fa-pencil",
         label: function() {
-            return this.name || "dataset";
+            return this.name || "intersection";
         }
     });
 </script>
 
-<script type="text/html" data-template-name="dataset">
+<script type="text/html" data-template-name="intersection">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Enter name">
+    </div>
+   <div class="form-row">
+        <label for="node-input-align"><i class="fa fa-tag"></i> align</label>
+        <input type="text" id="node-input-align" placeholder="align">
     </div>
 </script>
 

@@ -40,17 +40,11 @@ module.exports = function(RED) {
 			if (n !== 0) {
 				depends.push(msg.payload[n - 1].name)
 			}
-			msg.payload.push({
-				type: "dataset",
-				name: name,
-				depends,
-				args: []
-			})
 			node.send(msg);
 			node.status({ fill: "green", shape: "dot", text: `successfully published` });
 		});
 	}
 
 	// Register the node with Node-RED
-	RED.nodes.registerType("dataset", GdiNode);
+	RED.nodes.registerType("executer", GdiNode);
 };

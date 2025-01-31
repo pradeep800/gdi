@@ -40,11 +40,28 @@ module.exports = function(RED) {
 			if (n !== 0) {
 				depends.push(msg.payload[n - 1].name)
 			}
+			//TODO: check if it contains all parameter
+			const allowedKeys = new Set([
+				'name',
+				'distance',
+				'resolution',
+				'cap_style',
+				'join_style',
+				'mitre_limit',
+				'single_sided'
+			]);
+
+			config.mitre_limit = parseFloat(config.mitre_limit)
+			config.distance = parseFloat(config.distance)
+
+			const args = Object.entries(config)
+				.filter(([key]) => allowedKeys.has(key))
+				.map(([name, value]) => ({ name, value }));
 			msg.payload.push({
-				type: "dataset",
+				type: "buffer",
 				name: name,
 				depends,
-				args: []
+				args
 			})
 			node.send(msg);
 			node.status({ fill: "green", shape: "dot", text: `successfully published` });
@@ -52,5 +69,5 @@ module.exports = function(RED) {
 	}
 
 	// Register the node with Node-RED
-	RED.nodes.registerType("dataset", GdiNode);
+	RED.nodes.registerType("buffer", GdiNode);
 };
