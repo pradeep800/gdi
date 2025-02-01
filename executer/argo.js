@@ -32,7 +32,13 @@ const argo_workflow = {
                         "--save-object", "{{inputs.parameters.save-object}}",
                         "--config-path", "{{inputs.parameters.config-path}}",
                         "--file-path", "{{inputs.parameters.file-path}}"
-                    ]
+                    ],
+                    resources: {
+                        limits: {
+                            memory: "2Gi",
+                            cpu: "2"
+                        },
+                    }
                 }
             },
             {
@@ -53,7 +59,13 @@ const argo_workflow = {
                         "--client-id", "{{inputs.parameters.client-id}}",
                         "--artifact-url", "{{inputs.parameters.artifact-url}}",
                         "--save-as", "{{inputs.parameters.save-as}}"
-                    ]
+                    ],
+                    resources: {
+                        limits: {
+                            memory: "2Gi",
+                            cpu: "2"
+                        }
+                    }
                 }
             },
             {
