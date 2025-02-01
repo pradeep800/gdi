@@ -57,6 +57,7 @@ module.exports = function(RED) {
 			const args = Object.entries(config)
 				.filter(([key]) => allowedKeys.has(key))
 				.map(([name, value]) => ({ name, value }));
+
 			msg.payload.push({
 				type: "buffer",
 				name: name,

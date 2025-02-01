@@ -1,3 +1,4 @@
+const { generate_argo_workflow } = require('./argo')
 const isValidString = (str) => {
 	const pattern = /^[a-zA-Z0-9_-]+$/;
 	return pattern.test(str);
@@ -13,6 +14,7 @@ module.exports = function(RED) {
 
 		// Handle incoming messages
 		node.on('input', function(msg) {
+			node.status({})
 			// Use the dynamically configured values from the frontend
 			const name = node.name
 
@@ -36,10 +38,13 @@ module.exports = function(RED) {
 
 			}
 
-			let depends = []
-			if (n !== 0) {
-				depends.push(msg.payload[n - 1].name)
+			try {
+				let workflow = generate_argo_workflow(name, msg.payload)
+				console.log(JSON.stringify(workflow))
+			} catch (err) {
+				console.log(err)
 			}
+
 			node.send(msg);
 			node.status({ fill: "green", shape: "dot", text: `successfully published` });
 		});

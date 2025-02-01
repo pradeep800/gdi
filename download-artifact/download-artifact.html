@@ -1,0 +1,40 @@
+<script type="text/javascript">
+RED.nodes.registerType('download-artifact', {
+    category: 'gdi',
+    color: '#2ECC71',
+    defaults: {
+        name: { value: 'download-artifact' },
+        config: { value: '' },
+        'client-id': { value: '' },
+        'save-as': { value: '' }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-cog",
+    label: function() {
+        return this.name || "download-artifact";
+    }
+});
+</script>
+
+<script type="text/html" data-template-name="download-artifact">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Enter name">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-tag"></i> Config</label>
+        <input type="text" id="node-input-config" placeholder="Config file location">
+    </div>
+    <div class="form-row">
+        <label for="node-input-client-id"><i class="fa fa-id-card"></i> Client ID</label>
+        <input type="text" id="node-input-client-id" placeholder="Enter client ID">
+    </div>
+    
+   
+    <div class="form-row">
+        <label for="node-input-save-as"><i class="fa fa-save"></i> Save As</label>
+        <input type="text" id="node-input-save-as" placeholder="Enter save as name">
+    </div>
+</script>

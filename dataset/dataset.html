@@ -1,17 +1,24 @@
 <script type="text/javascript">
-    RED.nodes.registerType('dataset', {
-        category: 'gdi',
-        color: '#a6bbcf',
-        defaults: {
-            name: { value: '' },
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "font-awesome/fa-pencil",
-        label: function() {
-            return this.name || "dataset";
-        }
-    });
+RED.nodes.registerType('dataset', {
+    category: 'gdi',
+    color: '#4A90E2',
+    defaults: {
+        name: { value: 'dataset' },
+        'client-id': { value: '' },
+        'client-secret': { value: '' },
+        role: { value: '' },
+        'resource-id': { value: '' },
+        'save-object': { value: false },
+        'config-path': { value: '' },
+        'file-path': { value: '' }
+    },
+    inputs: 0,
+    outputs: 1,
+    icon: "font-awesome/fa-pencil",
+    label: function() {
+        return this.name || "dataset";
+    }
+});
 </script>
 
 <script type="text/html" data-template-name="dataset">
@@ -19,5 +26,39 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Enter name">
     </div>
+    
+    <div class="form-row">
+        <label for="node-input-client-id"><i class="fa fa-id-card"></i> Client ID</label>
+        <input type="text" id="node-input-client-id" placeholder="Enter client ID">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-client-secret"><i class="fa fa-key"></i> Client Secret</label>
+        <input type="password" id="node-input-client-secret" placeholder="Enter client secret">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-role"><i class="fa fa-user"></i> Role</label>
+        <input type="text" id="node-input-role" placeholder="Enter role">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-resource-id"><i class="fa fa-database"></i> Resource ID</label>
+        <input type="text" id="node-input-resource-id" placeholder="Enter resource ID">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-save-object"><i class="fa fa-save"></i> Save Object</label>
+        <input type="checkbox" id="node-input-save-object" style="display:inline-block; width:auto;">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-config-path"><i class="fa fa-cog"></i> Config Path</label>
+        <input type="text" id="node-input-config-path" placeholder="Enter config path">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-file-path"><i class="fa fa-file"></i> File Path</label>
+        <input type="text" id="node-input-file-path" placeholder="Enter file path">
+    </div>
 </script>
-
