@@ -7,7 +7,7 @@ const schema = z.object({
     "save-as": z.string().min(1, "Save As is required"),
 });
 const isValidString = (str) => {
-    const pattern = /^[a-zA-Z0-9_-]+$/;
+    const pattern = /^[a-zA-Z0-9-]+$/;
     return pattern.test(str);
 }
 

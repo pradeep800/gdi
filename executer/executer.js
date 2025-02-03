@@ -1,55 +1,128 @@
-const { generate_argo_workflow } = require('./argo')
+const { generate_argo_workflow } = require('./argo');
+const path = require('path');
+const fs = require('fs/promises');
+const { exec } = require('child_process');
+const crypto = require('crypto');
+const util = require('util');
+
+const execPromise = util.promisify(exec);
 const isValidString = (str) => {
-	const pattern = /^[a-zA-Z0-9_-]+$/;
+	const pattern = /^[a-zA-Z0-9-]+$/;
 	return pattern.test(str);
 }
 module.exports = function(RED) {
-
 	function GdiNode(config) {
 		RED.nodes.createNode(this, config);
 		var node = this;
 
-		// Store the configuration (e.g., name and class fields)
-		node.name = config.name;
 
-		// Handle incoming messages
-		node.on('input', function(msg) {
-			node.status({})
-			// Use the dynamically configured values from the frontend
-			const name = node.name
+		const name = config.name
+		if (!isValidString(name)) {
+			return node.status({ fill: "red", shape: "dot", text: `node name only contain a-z, A-Z, 0-9, - and _` });
+		}
+		let statusInterval
+		let workflowFile
+		node.on('input', async function(msg) {
+			node.status({});
 
-			if (!name) {
-				node.status({ fill: "red", shape: "dot", text: `no name` });
-				return;
-			}
-			if (!isValidString(name)) {
-				node.status({ fill: "red", shape: "dot", text: `node name only contain a-z, A-Z, 0-9, - and _` });
-				return;
-			}
 			if (!Array.isArray(msg.payload)) {
-				msg.payload = []
+				msg.payload = [];
 			}
-			let n = msg.payload.length;
-			for (let i = 0; i < n; i++) {
-				if (name === msg.payload[i].name) {
-					node.status({ fill: "red", shape: "dot", text: `node with this name already present` });
-					return;
-				}
 
+			// Generate workflow
+			const workflowId = `${name}-${crypto.randomUUID().slice(0, 8)}`;
+			let workflow;
+			try {
+				workflow = generate_argo_workflow(workflowId, msg.payload);
+			} catch (err) {
+				node.error(`Workflow generation failed: ${err.message}`, msg);
+				return node.status({
+					fill: "red",
+					shape: "dot",
+					text: "Invalid workflow configuration"
+				});
+			}
+
+			workflowFile = path.join(__dirname, `${workflowId}.json`);
+			try {
+				await fs.writeFile(workflowFile, JSON.stringify(workflow));
+			} catch (err) {
+				node.error(`File write failed: ${err.message}`, msg);
+				return node.status({
+					fill: "red",
+					shape: "dot",
+					text: "Failed to create workflow file"
+				});
 			}
 
 			try {
-				let workflow = generate_argo_workflow(name, msg.payload)
-				console.log(JSON.stringify(workflow))
+				const { stderr } = await execPromise(
+					`kubectl apply -f ${workflowFile}`
+				);
+				node.log(`Workflow submitted: ${stderr}`);
+				node.status({
+					fill: "blue",
+					shape: "dot",
+					text: "Workflow submitted"
+				});
 			} catch (err) {
-				console.log(err)
+				node.error(`Workflow submission failed: ${err.stderr}`, msg);
+				return node.status({
+					fill: "red",
+					shape: "dot",
+					text: "Submission failed"
+				});
+			} finally {
+				try {
+					await fs.unlink(workflowFile);
+					console.log("successfully deleted file " + workflowFile)
+				} catch (err) {
+					node.error(`File cleanup failed: ${err.message}`);
+				}
 			}
 
-			node.send(msg);
-			node.status({ fill: "green", shape: "dot", text: `successfully published` });
+			// Monitor workflow status
+			statusInterval = setInterval(async () => {
+				try {
+					const { stdout } = await execPromise(
+						`kubectl get workflow ${workflowId} -n argo ` +
+						"-o jsonpath='{.status.phase}'"
+					);
+					console.log(`Status: ${stdout}`)
+					if (stdout.includes("Succeeded")) {
+						node.status({ fill: "green", shape: "dot", text: `successfully complete` });
+						return clearInterval(statusInterval);
+					}
+					if (stdout.includes("Failed")) {
+						node.status({ fill: "red", shape: "dot", text: `Failed` });
+						return clearInterval(statusInterval);
+					}
+					node.status({
+						fill: "blue",
+						shape: "dot",
+						text: `Status: ${stdout}`
+					});
+
+				} catch (err) {
+					console.log(err)
+					node.error(`Status check failed: ${err.stderr}`);
+					clearInterval(statusInterval);
+					node.status({
+						fill: "red",
+						shape: "dot",
+						text: "Status check failed"
+					});
+				}
+			}, 3000);
+
+		});
+
+
+
+		node.on('close', function() {
+			clearInterval(statusInterval);
 		});
 	}
 
-	// Register the node with Node-RED
 	RED.nodes.registerType("executer", GdiNode);
 };

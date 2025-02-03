@@ -3,14 +3,14 @@ RED.nodes.registerType('dataset', {
     category: 'gdi',
     color: '#4A90E2',
     defaults: {
-        name: { value: 'dataset' },
-        'client-id': { value: '' },
-        'client-secret': { value: '' },
-        role: { value: '' },
-        'resource-id': { value: '' },
-        'save-object': { value: false },
-        'config-path': { value: '' },
-        'file-path': { value: '' }
+        name: { value: 'dataset',required:true },
+        'client-id': { value: '' ,required:true},
+        'client-secret': { value: '' ,required:true},
+        role: { value: '' ,required:true},
+        'resource-id': { value: '' ,required:true},
+        'save-object': { value: false ,required:true},
+        'config-path': { value: '' ,required:true},
+        'file-path': { value: '' ,required:true}
     },
     inputs: 0,
     outputs: 1,

@@ -12,7 +12,7 @@ const schema = z.object({
 	"file-path": z.string().min(1, "File Path is required"),
 });
 const isValidString = (str) => {
-	const pattern = /^[a-zA-Z0-9_-]+$/;
+	const pattern = /^[a-zA-Z0-9-]+$/;
 	return pattern.test(str);
 }
 

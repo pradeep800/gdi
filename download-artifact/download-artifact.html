@@ -3,10 +3,10 @@ RED.nodes.registerType('download-artifact', {
     category: 'gdi',
     color: '#2ECC71',
     defaults: {
-        name: { value: 'download-artifact' },
-        config: { value: '' },
-        'client-id': { value: '' },
-        'save-as': { value: '' }
+        name: { value: 'download-artifact' ,required:true},
+        config: { value: '' ,required:true},
+        'client-id': { value: '' ,required:true},
+        'save-as': { value: '' ,required:true}
     },
     inputs: 1,
     outputs: 1,
