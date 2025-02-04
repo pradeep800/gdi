@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: workflow-sa
+  namespace: gdi
+imagePullSecrets:
+  - name: analytics-registry-cred

@@ -1,51 +1,38 @@
+const { z } = require("zod")
 const isValidString = (str) => {
 	const pattern = /^[a-zA-Z0-9_-]+$/;
 	return pattern.test(str);
 }
-module.exports = function(RED) {
 
+const schema = z.object({
+	name: z.string().default(''),
+	config: z.string(),
+	'client-id': z.string(),
+	'store-artifact': z.string(),
+});
+module.exports = function(RED) {
 	function GdiNode(config) {
 		RED.nodes.createNode(this, config);
 		var node = this;
 
-		// Store the configuration (e.g., name and class fields)
 		node.name = config.name;
 		let nodes_payload = []
 		let depends = []
+		const name = node.name;
 
-		// Handle incoming messages
+		if (!name) {
+			node.status({ fill: "red", shape: "dot", text: `no name` });
+			return;
+		}
+		if (!isValidString(name)) {
+			node.status({ fill: "red", shape: "dot", text: `node name only contain a-z, A-Z, 0-9, - and _` });
+			return;
+		}
 		node.on('input', function(msg) {
-
-			const name = node.name
-			const align = config.align.toLowerCase()
-
-			if (align !== "true" && align !== "false" && align != "none") {
-				node.status({ fill: "red", shape: "dot", text: `align values can be true false and none` });
-				return;
-			}
-			/*
-			else {
-				node.status({ text: "" });
-			}
-			*/
-			if (!name) {
-				node.status({ fill: "red", shape: "dot", text: `no name` });
-				return;
-			}
-			if (!isValidString(name)) {
-				node.status({ fill: "red", shape: "dot", text: `node name only contain a-z, A-Z, 0-9, - and _` });
-				return;
-			}
 			if (!Array.isArray(msg.payload)) {
 				node.status({ fill: "red", shape: "dot", text: `unsupported` });
 				return;
 			}
-
-			//check if there is duplicate names
-
-
-
-			//TODO: check name from both stream
 
 			if (nodes_payload.length == 0) {
 				nodes_payload.push(msg.payload)
@@ -60,7 +47,8 @@ module.exports = function(RED) {
 				return;
 			}
 
-			let total_length = nodes_payload[0].length + nodes_payload[1].length
+			// Check for duplicate names
+			let total_length = nodes_payload[0].length + nodes_payload[1].length;
 			let names = new Set();
 
 			for (let i = 0; i < nodes_payload[0].length; i++) {
@@ -73,21 +61,31 @@ module.exports = function(RED) {
 				node.status({ fill: "red", shape: "dot", text: `there is same name between 2 parallel nodes` });
 				return
 			}
-			for (let nm in names) {
+			for (let nm of names) {
 				if (name === nm) {
 					node.status({ fill: "red", shape: "dot", text: `node with this name already present` });
-					nodes_payload = []
-					depends = []
 					return;
 				}
-
 			}
+
+			const result = schema.safeParse(config);
+
+			if (!result.success) {
+				console.log(result.error.format());
+				node.status({ fill: "red", shape: "dot", text: `fields are missing` });
+				return;
+			}
+			const args = Object.entries(result.data)
+				.map(([name, value]) => ({ name, value }));
+
+			// Map parameters to args
 			msg.payload = [...nodes_payload[0], ...nodes_payload[1], {
 				type: "intersection",
 				name: name,
 				depends,
-				args: [{ key: "align", value: align }]
-			}]
+				args
+			}];
+
 			node.send(msg);
 			node.status({ fill: "green", shape: "dot", text: `successfully published` });
 		});

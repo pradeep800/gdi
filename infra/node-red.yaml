@@ -1,0 +1,69 @@
+# Combined RBAC configuration for nodered-sa
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nodered-sa
+  namespace: gdi
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nodered-role
+rules:
+- apiGroups: ["", "apps", "batch", "extensions"]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["argoproj.io"]
+  resources: ["workflows"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nodered-rb
+subjects:
+- kind: ServiceAccount
+  name: nodered-sa
+  namespace: gdi  
+roleRef:
+  kind: ClusterRole
+  name: nodered-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodered
+  namespace: gdi 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodered
+  template:
+    metadata:
+      labels:
+        app: nodered
+    spec:
+      serviceAccountName: nodered-sa
+      imagePullSecrets:
+      - name: analytics-registry-cred
+      containers:
+      - name: nodered
+        image: private-registry.iudx.org.in/custom-nodered:latest
+        ports:
+        - containerPort: 1880
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: gdi 
+  name: nodered-service
+spec:
+  selector:
+    app: nodered
+  ports:
+  - port: 80
+    targetPort: 1880
+  type: LoadBalancer 

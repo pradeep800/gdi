@@ -8,9 +8,8 @@ RED.nodes.registerType('dataset', {
         'client-secret': { value: '' ,required:true},
         role: { value: '' ,required:true},
         'resource-id': { value: '' ,required:true},
-        'save-object': { value: false ,required:true},
-        'config-path': { value: '' ,required:true},
-        'file-path': { value: '' ,required:true}
+        'save-object': { value: "True",required:true},
+        'config-path': { value: './config.json' ,required:true},
     },
     inputs: 0,
     outputs: 1,
@@ -49,7 +48,10 @@ RED.nodes.registerType('dataset', {
     
     <div class="form-row">
         <label for="node-input-save-object"><i class="fa fa-save"></i> Save Object</label>
-        <input type="checkbox" id="node-input-save-object" style="display:inline-block; width:auto;">
+       <select id="node-input-save-object">
+            <option value="True">True</option>
+            <option value="False">False</option>
+        </select>
     </div>
     
     <div class="form-row">
@@ -57,8 +59,4 @@ RED.nodes.registerType('dataset', {
         <input type="text" id="node-input-config-path" placeholder="Enter config path">
     </div>
     
-    <div class="form-row">
-        <label for="node-input-file-path"><i class="fa fa-file"></i> File Path</label>
-        <input type="text" id="node-input-file-path" placeholder="Enter file path">
-    </div>
 </script>

@@ -7,9 +7,8 @@ const schema = z.object({
 	"client-secret": z.string().min(1, "Client Secret is required"),
 	role: z.string().min(1, "Role is required"),
 	"resource-id": z.string().min(1, "Resource ID is required"),
-	"save-object": z.boolean(),
+	"save-object": z.string(),
 	"config-path": z.string().min(1, "Config Path is required"),
-	"file-path": z.string().min(1, "File Path is required"),
 });
 const isValidString = (str) => {
 	const pattern = /^[a-zA-Z0-9-]+$/;

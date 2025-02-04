@@ -1,0 +1,23 @@
+{
+  "name": "gdi-submit-workflow",
+  "version": "1.0.0",
+  "description": "A simple example Node-RED node for GDI",
+  "main": "submit-workflow.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "submit-workflow",
+    "gdi"
+  ],
+  "node-red": {
+    "nodes": {
+      "submit-workflow": "submit-workflow.js"
+    }
+  },
+  "author": "Pradeep",
+  "license": "MIT",
+  "dependencies": {
+    "zod": "^3.24.1"
+  }
+}
