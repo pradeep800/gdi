@@ -1,4 +1,5 @@
-FROM nodered/node-red:latest
+FROM nodered/node-red:4.0.8-22
+
 
 # Copy files
 COPY . . 
@@ -38,7 +39,7 @@ kubectl config set-context in-cluster \
 kubectl config use-context in-cluster' > /usr/local/bin/k8s-config.sh && \
     chmod +x /usr/local/bin/k8s-config.sh
 
-
+RUN cp ./settings.js ./node_modules/node-red
 # Expose Node-RED port
 EXPOSE 1880
 

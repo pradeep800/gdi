@@ -126,3 +126,4 @@ module.exports = function(RED) {
 
 	RED.nodes.registerType("submit-workflow", GdiNode);
 };
+

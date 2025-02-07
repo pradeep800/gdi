@@ -6,6 +6,9 @@ const argo_workflow = {
         name: ""
     },
     spec: {
+        imagePullSecrets: [{
+            name: "analytics-registry-cred"
+        }],
         entrypoint: "main-dag",
         templates: [
             {
@@ -25,17 +28,16 @@ const argo_workflow = {
                         {
                             name: "result",
                             valueFrom: {
-                                path: "/result.txt"
+                                path: "/tmp/result.txt"
                             }
                         }
                     ]
                 },
                 container: {
-                    image: "gdi-cli:latest",
+                    image: "private-registry.iudx.org.in/gdi-cli:latest",
                     command: ["bash", "-c"],
-                    imagePullPolicy: "Never",
                     args: [
-                        "gdi fetch-resource --client-id {{inputs.parameters.client-id}} --client-secret {{inputs.parameters.client-secret}} --role {{inputs.parameters.role}} --resource-id {{inputs.parameters.resource-id}} --save-object {{inputs.parameters.save-object}} --config-path {{inputs.parameters.config-path}} |  tee /result.txt; ( exit ${PIPESTATUS[0]} )"
+                        "gdi fetch-resource --client-id {{inputs.parameters.client-id}} --client-secret {{inputs.parameters.client-secret}} --role {{inputs.parameters.role}} --resource-id {{inputs.parameters.resource-id}} --save-object {{inputs.parameters.save-object}} --config-path {{inputs.parameters.config-path}} |  tee /tmp/result.txt; ( exit ${PIPESTATUS[0]} )"
                     ],
                     resources: {
                         limits: {
@@ -56,9 +58,8 @@ const argo_workflow = {
                     ]
                 },
                 container: {
-                    image: "gdi-cli:latest",
+                    image: "private-registry.iudx.org.in/gdi-cli:latest",
                     command: ["gdi", "download-artifact"],
-                    imagePullPolicy: "Never",
                     args: [
                         "--config", "{{inputs.parameters.config}}",
                         "--client-id", "{{inputs.parameters.client-id}}",
@@ -89,17 +90,16 @@ const argo_workflow = {
                         {
                             name: "result",
                             valueFrom: {
-                                path: "/result.txt"
+                                path: "/tmp/result.txt"
                             }
                         }
                     ]
                 },
                 container: {
-                    image: "gdi-cli:latest",
+                    image: "private-registry.iudx.org.in/gdi-cli:latest",
                     command: ["bash", "-c"],
-                    imagePullPolicy: "Never",
                     args: [
-                        "gdi create-buffer --config {{inputs.parameters.config}} --client-id {{inputs.parameters.client-id}} --artifact-url {{inputs.parameters.artifact-url}} --buffer-d {{inputs.parameters.buffer-distance}} --store-artifact  {{inputs.parameters.store-artifact}} |  tee /result.txt; ( exit ${PIPESTATUS[0]} )"
+                        "gdi create-buffer --config {{inputs.parameters.config}} --client-id {{inputs.parameters.client-id}} --artifact-url {{inputs.parameters.artifact-url}} --buffer-d {{inputs.parameters.buffer-distance}} --store-artifact  {{inputs.parameters.store-artifact}} |  tee /tmp/result.txt; ( exit ${PIPESTATUS[0]} )"
                     ],
                     resources: {
                         limits: {
@@ -125,17 +125,16 @@ const argo_workflow = {
                         {
                             name: "result",
                             valueFrom: {
-                                path: "/result.txt"
+                                path: "/tmp/result.txt"
                             }
                         }
                     ]
                 },
                 container: {
-                    image: "gdi-cli:latest",
+                    image: "private-registry.iudx.org.in/gdi-cli:latest",
                     command: ["bash", "-c"],
-                    imagePullPolicy: "Never",
                     args: [
-                        "gdi create-intersection --config {{inputs.parameters.config}} --client-id {{inputs.parameters.client-id}} --artifact-url-1 {{inputs.parameters.artifact-url1}} --artifact-url-2 {{inputs.parameters.artifact-url2}} --store-artifact  {{inputs.parameters.store-artifact}} |  tee /result.txt; ( exit ${PIPESTATUS[0]} )"
+                        "gdi create-intersection --config {{inputs.parameters.config}} --client-id {{inputs.parameters.client-id}} --artifact-url-1 {{inputs.parameters.artifact-url1}} --artifact-url-2 {{inputs.parameters.artifact-url2}} --store-artifact  {{inputs.parameters.store-artifact}} |  tee /tmp/result.txt; ( exit ${PIPESTATUS[0]} )"
                     ],
                     resources: {
                         limits: {
@@ -205,7 +204,7 @@ const nameToCommand = {
     'download-artifact': 'download-artifact',
     intersection: 'create-intersection'
 }
-export function generate_argo_workflow(name, nodes_payload) {
+function generate_argo_workflow(name, nodes_payload) {
     argo_workflow.metadata.name = name;
 
     const dagTasks = nodes_payload.map(node => {
@@ -231,3 +230,5 @@ export function generate_argo_workflow(name, nodes_payload) {
 
     return argo_workflow;
 }
+module.exports.generate_argo_workflow = generate_argo_workflow;
+
