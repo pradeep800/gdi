@@ -5,14 +5,16 @@ metadata:
   namespace: argo
 data:
   sso: |
-    issuer: http://keycloak:8080/auth/realms/master
+    issuer: http://keycloak:8080/realms/argo
     clientId:
       name: argo-sso-secret
       key: client-id
     clientSecret:
       name: argo-sso-secret
       key: client-secret
-    redirectUrl: http://keycloak:8080/oauth2/callback
-    scopes:
-      - openid
-      - email
+    redirectUrl: https://localhost:2746/oauth2/callback/
+    scopes: 
+     - groups
+    rbac:
+      enabled: true
+

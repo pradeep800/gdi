@@ -1,0 +1,13 @@
+server:
+  authModes:
+    - sso
+  sso:
+    enabled: true
+    issuer: http://keycloak:8080/realms/argo
+    clientId:
+      name: "argo-sso-secret"
+      key: client-id
+    clientSecret:
+      name: "argo-sso-secret"
+      key: client-secret
+    redirectUrl: http://localhost:2746/oauth2/callback

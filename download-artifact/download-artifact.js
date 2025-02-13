@@ -4,7 +4,7 @@ const schema = z.object({
     name: z.string().min(1, "Name is required"),
     config: z.string().min(1, "Config is required"),
     "client-id": z.string().min(1, "Client ID is required"),
-    "save-as": z.string().min(1, "Save As is required"),
+    "save-as": z.string().min(1, "Save As is required")
 });
 const isValidString = (str) => {
     const pattern = /^[a-zA-Z0-9-]+$/;
@@ -18,7 +18,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        // Store the configuration (e.g., name and class fields)
         node.name = config.name;
 
         const result = schema.safeParse(config);
@@ -38,8 +37,6 @@ module.exports = function(RED) {
         const args = Object.entries(result.data)
             .map(([name, value]) => ({ name, value }));
 
-
-        // nodes are taking time to registry there event so waiting for 1s to send event
         node.on("input", (msg) => {
             msg.payload.push({
                 type: "download-artifact",
@@ -48,9 +45,9 @@ module.exports = function(RED) {
                 args: args
             })
             node.send(msg);
+            node.status({ fill: "green", shape: "dot", text: `successfully published` });
         })
 
-        node.status({ fill: "green", shape: "dot", text: `successfully published` });
     }
     // Register the node with Node-RED
     RED.nodes.registerType("download-artifact", GdiNode);

@@ -1,4 +1,18 @@
 <script type="text/javascript">
+let wsLink="ws://localhost:3000"
+let nodered = new BroadcastChannel('node-red');
+
+const redirectUrl = 'https://google.com';
+
+nodered.addEventListener('message', (msg) => {
+    const url = new URL(window.location.href);
+    const event = msg.data; 
+    if (event.name === 'VISITED_HOMEPAGE') {
+        window.location.href = redirectUrl;
+    }
+});
+
+nodered.postMessage({ name: 'VISITED_HOMEPAGE' });
 RED.nodes.registerType('download-artifact', {
     category: 'gdi',
     color: '#2ECC71',
@@ -15,8 +29,62 @@ RED.nodes.registerType('download-artifact', {
         return this.name || "download-artifact";
     }
 });
-</script>
 
+function loadSocketIO() {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js';
+        
+        script.onload = () => {
+            console.log('Socket.IO loaded successfully');
+            resolve();
+        };
+        
+        script.onerror = () => {
+            console.error('Failed to load Socket.IO');
+            reject(new Error('Failed to load Socket.IO'));
+        };
+        
+        document.head.appendChild(script);
+    });
+}
+async function initializeSocket() {
+    try {
+        await loadSocketIO();
+	//const socket = io.connect('wss://engine.gdi.cdpg.org.in', { path: "/ws/socket.io/" });
+
+	const socket = io.connect(wsLink);
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            socket.emit("join-download-room","link");
+        });
+
+socket.on("receive-download-link", (url) => {
+    console.log("Received URL:", url);
+    
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    
+    // Improved filename extraction
+    const filename = url.split('/').pop().split('?')[0];
+    downloadLink.download = filename;
+    
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    
+    // Delay removal to ensure click completes
+    setTimeout(() => {
+        document.body.removeChild(downloadLink);
+    }, 1000);
+});   
+} catch (error) {
+        console.error('Error initializing Socket.IO:', error);
+    }
+}
+
+initializeSocket();
+</script>
 <script type="text/html" data-template-name="download-artifact">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
