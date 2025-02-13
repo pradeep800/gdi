@@ -125,4 +125,3 @@ socket.on("receive-download-link", (url) => {
 });
 ```
 
-# gdi-workflow
